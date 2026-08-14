@@ -1,4 +1,4 @@
-function Get-FileSha256 {
+﻿function Get-FileSha256 {
     param([string]$Path)
 
     $stream = [System.IO.File]::OpenRead($Path)

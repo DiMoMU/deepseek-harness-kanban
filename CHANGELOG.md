@@ -1,4 +1,8 @@
 ﻿
+## 1.3.0 — 2026-08-14
+
+- 新增 **真删除会话**：宿主插件 `@deepseek-ai/dsh-session-delete`（typert Remote `sessionDelete/deleteSession`，永久删除会话日志目录）+ 补丁 `dsh-api-remotes` 客户端注册远程接口 + 卡片菜单「删除」（危险色 + 二次确认）。
+- README 补充「设计理念」与「优势（项目管理）」，双语 README 改为点击切换（README.md / README.zh-CN.md）。
 ## 1.2.0 — 2026-08-14
 
 - 卡片菜单重做：支持 **重命名 / 分叉 / 归档** 与模块选择；点外部或 Esc 关闭；模块选择可选、不再强制选择才能关闭。

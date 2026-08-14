@@ -1,6 +1,6 @@
 ﻿# dsh-kanban-installer — 卸载/回滚 DSH 会话看板改造
 # 用法: powershell -NoProfile -ExecutionPolicy Bypass -File .\uninstall.ps1 [-Restart]
-# 说明: 恢复原始 bundle、移除 ui-kanban 配置行、删除插件包（可选 -KeepPlugin 保留）。
+# 说明: 恢复原始 bundle、移除配置行、删除插件包（可选 -KeepPlugin 保留）。
 #       看板数据（浏览器 localStorage dsh.kanban.v1）不受影响。
 [CmdletBinding()]
 param(
@@ -26,6 +26,7 @@ if (-not $Profile) { $Profile = Join-Path $env:USERPROFILE ".dsh\profiles\web" }
 $LayoutLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-client-ui-layout" -RelativePath "lib\client.js"
 $WorkspaceLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-client-ui-workspace" -RelativePath "lib\client.js"
 $SidebarLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-client-ui-sidebar" -RelativePath "lib\client.js"
+$ApiRemotesLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-api-remotes" -RelativePath "lib\client.js"
 $PluginDest = Join-Path $env:USERPROFILE ".dsh\profiles\node_modules\@deepseek-ai\dsh-client-ui-kanban"
 $PatchYml = Join-Path $Profile "cordis.patch.yml"
 
@@ -33,6 +34,7 @@ Write-Host "== DSH 会话看板卸载 =="
 Restore-Bundle -Name "dsh-client-ui-layout" -Live $LayoutLive -Old (Join-Path $Root "patch\layout.old.js") -New (Join-Path $Root "patch\layout.new.js")
 Restore-Bundle -Name "dsh-client-ui-workspace" -Live $WorkspaceLive -Old (Join-Path $Root "patch\workspace.old.js") -New (Join-Path $Root "patch\workspace.new.js")
 Restore-Bundle -Name "dsh-client-ui-sidebar" -Live $SidebarLive -Old (Join-Path $Root "patch\sidebar.old.js") -New (Join-Path $Root "patch\sidebar.new.js")
+Restore-Bundle -Name "dsh-api-remotes" -Live $ApiRemotesLive -Old (Join-Path $Root "patch\api-remotes.old.js") -New (Join-Path $Root "patch\api-remotes.new.js")
 
 if ($KeepPlugin) {
     Write-Host "[保留] 插件包未删除（-KeepPlugin）"
@@ -42,17 +44,20 @@ if ($KeepPlugin) {
 } else {
     Write-Host "[跳过] 插件包不存在"
 }
+$HostPluginDest = Join-Path $env:USERPROFILE ".dsh\profiles\node_modules\@deepseek-ai\dsh-session-delete"
+if (Test-Path $HostPluginDest) { Remove-Item $HostPluginDest -Recurse -Force; Write-Host "[完成] 已删除宿主插件 $HostPluginDest" }
 
 if (Test-Path $PatchYml) {
     $content = Get-Content $PatchYml -Raw -Encoding UTF8
-    $newContent = $content -replace '(?ms)^- insert:\r?\n\s+- id: ui-kanban\r?\n\s+name: ''@deepseek-ai/dsh-client-ui-kanban''\r?\n', ''
+    $newContent = $content -replace '(?ms)^- insert:\r?\n\s+- id: ui-kanban\r?\n\s+name: ''@deepseek-ai/dsh-client-ui-kanban''\r?\n\s+- id: session-delete\r?\n\s+name: ''@deepseek-ai/dsh-session-delete''\r?\n', ''
+    $newContent = $newContent -replace '(?ms)^- insert:\r?\n\s+- id: ui-kanban\r?\n\s+name: ''@deepseek-ai/dsh-client-ui-kanban''\r?\n', ''
     if ($newContent -ne $content) {
         $body = ($newContent -split "`r?`n" | Where-Object { $_ -notmatch '^\s*#' -and $_.Trim() -ne "" }) -join "`n"
         if ($body.Trim() -eq "") { $newContent = $newContent.TrimEnd() + "`n[]`n" }
         Set-Content -Path $PatchYml -Value $newContent -Encoding UTF8 -NoNewline
-        Write-Host "[完成] cordis.patch.yml 已移除 ui-kanban 行"
+        Write-Host "[完成] cordis.patch.yml 已移除 ui-kanban + session-delete 行"
     } else {
-        Write-Host "[跳过] cordis.patch.yml 无 ui-kanban 行"
+        Write-Host "[跳过] cordis.patch.yml 无 ui-kanban / session-delete 行"
     }
 }
 

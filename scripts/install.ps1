@@ -39,6 +39,7 @@ $manifest = Get-Content (Join-Path $Root "manifest.json") -Raw -Encoding UTF8 | 
 $LayoutLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-client-ui-layout" -RelativePath "lib\client.js"
 $WorkspaceLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-client-ui-workspace" -RelativePath "lib\client.js"
 $SidebarLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-client-ui-sidebar" -RelativePath "lib\client.js"
+$ApiRemotesLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-api-remotes" -RelativePath "lib\client.js"
 $PluginDest = Join-Path $env:USERPROFILE ".dsh\profiles\node_modules\@deepseek-ai\dsh-client-ui-kanban"
 $PatchYml = Join-Path $Profile "cordis.patch.yml"
 
@@ -67,7 +68,8 @@ $ok1 = Apply-Bundle -Name "dsh-client-ui-layout" -Live $LayoutLive -Old (Join-Pa
 # 2) 项目列表：项目→模块复选框二级列表
 $ok2 = Apply-Bundle -Name "dsh-client-ui-workspace" -Live $WorkspaceLive -Old (Join-Path $Root "patch\workspace.old.js") -New (Join-Path $Root "patch\workspace.new.js")
 $ok3 = Apply-Bundle -Name "dsh-client-ui-sidebar" -Live $SidebarLive -Old (Join-Path $Root "patch\sidebar.old.js") -New (Join-Path $Root "patch\sidebar.new.js")
-if (-not ($ok1 -and $ok2 -and $ok3)) { Write-Host "安装中止：bundle 基线不匹配（可用 -Force 强制，但仅在版本一致时推荐）。"; exit 1 }
+$ok4 = Apply-Bundle -Name "dsh-api-remotes" -Live $ApiRemotesLive -Old (Join-Path $Root "patch\api-remotes.old.js") -New (Join-Path $Root "patch\api-remotes.new.js")
+if (-not ($ok1 -and $ok2 -and $ok3 -and $ok4)) { Write-Host "安装中止：bundle 基线不匹配（可用 -Force 强制，但仅在版本一致时推荐）。"; exit 1 }
 
 # 3) 安装看板插件包（flat fallback，profile 可解析）
 New-Item -ItemType Directory -Force -Path (Join-Path $PluginDest "lib") | Out-Null
@@ -76,6 +78,15 @@ Copy-Item (Join-Path $Root "plugin\lib\index.js") (Join-Path $PluginDest "lib\in
 Copy-Item (Join-Path $Root "plugin\lib\client.js") (Join-Path $PluginDest "lib\client.js") -Force
 Write-Host "[完成] 插件包已安装 -> $PluginDest"
 
+# 3.5) 安装宿主删除插件（dsh-session-delete，真删除会话日志）
+$HostPluginDest = Join-Path $env:USERPROFILE ".dsh\profiles\node_modules\@deepseek-ai\dsh-session-delete"
+New-Item -ItemType Directory -Force -Path (Join-Path $HostPluginDest "lib") | Out-Null
+Copy-Item (Join-Path $Root "host-plugin\package.json") (Join-Path $HostPluginDest "package.json") -Force
+Copy-Item (Join-Path $Root "host-plugin\lib\index.js") (Join-Path $HostPluginDest "lib\index.js") -Force
+Copy-Item (Join-Path $Root "host-plugin\lib\typert.host.js") (Join-Path $HostPluginDest "lib\typert.host.js") -Force
+Copy-Item (Join-Path $Root "host-plugin\lib\typert.remote-client.js") (Join-Path $HostPluginDest "lib\typert.remote-client.js") -Force
+Write-Host "[完成] 宿主删除插件已安装 -> $HostPluginDest"
+
 # 4) profile 配置：cordis.patch.yml 追加 ui-kanban 行（幂等；profile 未初始化则创建）
 if (-not (Test-Path $Profile)) { New-Item -ItemType Directory -Force -Path $Profile | Out-Null }
 if (-not (Test-Path $PatchYml)) {
@@ -83,17 +94,19 @@ if (-not (Test-Path $PatchYml)) {
     Write-Host "[创建] 已初始化 profile 补丁文件 $PatchYml"
 }
 $content = Get-Content $PatchYml -Raw -Encoding UTF8
-if ($content -match "ui-kanban") {
-    Write-Host "[跳过] cordis.patch.yml 已包含 ui-kanban"
+if ($content -match "session-delete") {
+    Write-Host "[跳过] cordis.patch.yml 已包含 ui-kanban 与 session-delete"
 } else {
-    $row = "- insert:`n    - id: ui-kanban`n      name: '@deepseek-ai/dsh-client-ui-kanban'"
+    $row = "- insert:`n    - id: ui-kanban`n      name: '@deepseek-ai/dsh-client-ui-kanban'`n    - id: session-delete`n      name: '@deepseek-ai/dsh-session-delete'"
     if ($content -match '(?m)^\[\]\s*$') {
         $content = $content -replace '(?m)^\[\]\s*$', $row
+    } elseif ($content -match "ui-kanban") {
+        $content = $content -replace "(?m)      name: '@deepseek-ai/dsh-client-ui-kanban'\s*$", "      name: '@deepseek-ai/dsh-client-ui-kanban'`n    - id: session-delete`n      name: '@deepseek-ai/dsh-session-delete'"
     } else {
         $content = $content.TrimEnd() + "`n" + $row + "`n"
     }
     Set-Content -Path $PatchYml -Value $content -Encoding UTF8 -NoNewline
-    Write-Host "[完成] cordis.patch.yml 已追加 ui-kanban 行"
+    Write-Host "[完成] cordis.patch.yml 已追加 ui-kanban + session-delete 行"
 }
 
 Write-Host ""

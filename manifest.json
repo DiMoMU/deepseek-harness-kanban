@@ -1,19 +1,23 @@
 {
   "name": "dsh-kanban-installer",
-  "description": "DSH Web GUI 会话看板改造一键安装包（项目列表右侧三列看板）",
-  "version": "1.2.0",
+  "description": "DSH Web GUI 会话看板改造一键安装包（项目列表右侧三列看板 + 真删除会话）",
+  "version": "1.3.0",
   "changelog": [
-    "1.2.0: 卡片菜单重做（重命名/分叉/归档，点外部或 Esc 关闭，模块选择可选）；修复看板折叠后无法再展开；移除侧栏重复的新建会话按钮（新增 ui-sidebar 补丁基线）",
-    "1.1.0: 卡片两行排版（会话名称独占整行）；拖拽流畅化；修复 TDZ 渲染崩溃；新增 verify.ps1",
-    "1.0.0: 初始版本（四栏布局、模块复选框二级列表、三列看板、插件与脚本）"
+    "1.3.0: 新增真删除会话（宿主插件 dsh-session-delete + api-remotes 远程接口 + 卡片菜单删除）；README 补充设计理念与项目管理优势；双语 README 改为点击切换",
+    "1.2.0: 卡片菜单重做（重命名/分叉/归档）；修复看板折叠后无法再展开；移除侧栏重复新建会话按钮；合并 deepseekc 安装器修复（自定义 SHA256 / npm 全局+嵌套依赖 / ASCII cmd / 保留退出码）",
+    "1.1.0: 卡片两行排版；拖拽流畅化；修复 TDZ 渲染崩溃；新增 verify.ps1",
+    "1.0.0: 初始版本"
   ],
   "target": {
     "dsh": "0.1.0-rc.6",
     "layout": "0.1.0-rc.6",
     "workspace": "0.1.0-rc.6",
-    "sidebar": "0.1.0-rc.6"
+    "sidebar": "0.1.0-rc.6",
+    "api-remotes": "0.1.0-rc.6"
   },
   "files": [
+    "patch/api-remotes.old.js",
+    "patch/api-remotes.new.js",
     "patch/layout.old.js",
     "patch/layout.new.js",
     "patch/sidebar.old.js",
@@ -22,6 +26,10 @@
     "patch/workspace.new.js",
     "plugin/package.json",
     "plugin/lib/index.js",
-    "plugin/lib/client.js"
+    "plugin/lib/client.js",
+    "host-plugin/package.json",
+    "host-plugin/lib/index.js",
+    "host-plugin/lib/typert.host.js",
+    "host-plugin/lib/typert.remote-client.js"
   ]
 }

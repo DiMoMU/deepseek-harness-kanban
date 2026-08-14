@@ -8,6 +8,23 @@
 
 > A session kanban column for the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (dsh) Web UI — three scrollable lists (To-do / Doing / Done), per-project module filtering, drag & drop, and a one-click installer that patches the stock `dsh web` bundles.
 
+## Design philosophy
+
+- **Project = DSH workspace**: one workspace maps to one "project"; every session becomes a task card.
+- **Three-column workflow**: To-do / Doing / Done is a user-owned workflow state, decoupled from DSH's runtime state (running / waiting for approval, etc.).
+- **Module = functional module**: a second-level grouping inside a project; the kanban is strictly **single-project** to avoid cross-project noise.
+- **Session card = the single entry point**: click to open, drag to change status, menu for lifecycle actions (Rename / Fork / Archive / Delete).
+- **Read-only toward DSH data**: status / module / filter live only in browser `localStorage`; session logs are never rewritten. A thin client plugin plus a few bundle patches, installed / uninstalled with one click.
+
+## Advantages (project management)
+
+- **At-a-glance project overview**: all sessions of a project spread across three status columns — progress is visible immediately.
+- **Modular organization**: sessions grouped by functional module with multi-select filtering, so large projects stay navigable.
+- **Single-project focus**: view one project at a time; switching projects switches the board, cutting context-switch cost.
+- **Drag = state transition**: moving a card to Doing / Done updates its status — more intuitive and faster than menus.
+- **Sessions as assets**: keeps DSH's native Rename / Fork / Archive and adds Delete; the board only adds a workflow view, it never duplicates data.
+- **Team-friendly**: one-click installer, browser-local state, version-pinned baselines with rollback.
+
 ## Features
 
 - **Four-column layout**: `Projects | Kanban | Chat | Details` — the kanban sits to the right of the project list, resizable (480–760px), collapsible, auto-hidden on narrow screens.

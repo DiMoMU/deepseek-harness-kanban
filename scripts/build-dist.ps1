@@ -10,12 +10,15 @@ Remove-Item $Stage -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path (Join-Path $Stage "patch"), (Join-Path $Stage "plugin\lib") | Out-Null
 
 # 1) 补丁基线
-Copy-Item (Join-Path $Root "patch\layout.old.js"),(Join-Path $Root "patch\layout.new.js"),(Join-Path $Root "patch\sidebar.old.js"),(Join-Path $Root "patch\sidebar.new.js"),(Join-Path $Root "patch\workspace.old.js"),(Join-Path $Root "patch\workspace.new.js") (Join-Path $Stage "patch\") -Force
+Copy-Item (Join-Path $Root "patch\api-remotes.old.js"),(Join-Path $Root "patch\api-remotes.new.js"),(Join-Path $Root "patch\layout.old.js"),(Join-Path $Root "patch\layout.new.js"),(Join-Path $Root "patch\sidebar.old.js"),(Join-Path $Root "patch\sidebar.new.js"),(Join-Path $Root "patch\workspace.old.js"),(Join-Path $Root "patch\workspace.new.js") (Join-Path $Stage "patch\") -Force
 
 # 2) 插件包（安装器布局：package.json + lib/）
 Copy-Item (Join-Path $Root "plugin\package.json") (Join-Path $Stage "plugin\package.json") -Force
 Copy-Item (Join-Path $Root "plugin\index.js") (Join-Path $Stage "plugin\lib\index.js") -Force
 Copy-Item (Join-Path $Root "plugin\client.js") (Join-Path $Stage "plugin\lib\client.js") -Force
+New-Item -ItemType Directory -Force -Path (Join-Path $Stage "host-plugin\lib") | Out-Null
+Copy-Item (Join-Path $Root "host-plugin\package.json") (Join-Path $Stage "host-plugin\package.json") -Force
+Copy-Item (Join-Path $Root "host-plugin\lib\index.js"),(Join-Path $Root "host-plugin\lib\typert.host.js"),(Join-Path $Root "host-plugin\lib\typert.remote-client.js") (Join-Path $Stage "host-plugin\lib\") -Force
 
 # 3) 安装/卸载/自检/重启脚本放到 zip 根（脚本以自身目录为根解析 patch/plugin/manifest）
 foreach ($name in @("install", "uninstall", "verify", "restart")) {

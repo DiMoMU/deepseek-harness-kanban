@@ -21,6 +21,7 @@ if (-not $Profile) { $Profile = Join-Path $env:USERPROFILE ".dsh\profiles\web" }
 $LayoutLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-client-ui-layout" -RelativePath "lib\client.js"
 $WorkspaceLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-client-ui-workspace" -RelativePath "lib\client.js"
 $SidebarLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-client-ui-sidebar" -RelativePath "lib\client.js"
+$ApiRemotesLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-api-remotes" -RelativePath "lib\client.js"
 $PluginDest = Join-Path $env:USERPROFILE ".dsh\profiles\node_modules\@deepseek-ai\dsh-client-ui-kanban"
 $PatchYml = Join-Path $Profile "cordis.patch.yml"
 
@@ -31,15 +32,19 @@ Write-Host ""
 Write-Host ("布局外壳 dsh-client-ui-layout : " + (StateOf $LayoutLive (Join-Path $Root "patch\layout.old.js") (Join-Path $Root "patch\layout.new.js")))
 Write-Host ("项目列表 dsh-client-ui-workspace: " + (StateOf $WorkspaceLive (Join-Path $Root "patch\workspace.old.js") (Join-Path $Root "patch\workspace.new.js")))
 Write-Host ("侧栏外壳 dsh-client-ui-sidebar  : " + (StateOf $SidebarLive (Join-Path $Root "patch\sidebar.old.js") (Join-Path $Root "patch\sidebar.new.js")))
+Write-Host ("远程接口 dsh-api-remotes       : " + (StateOf $ApiRemotesLive (Join-Path $Root "patch\api-remotes.old.js") (Join-Path $Root "patch\api-remotes.new.js")))
 $pluginOk = Test-Path (Join-Path $PluginDest "lib\client.js")
+$hostPluginOk = Test-Path (Join-Path $env:USERPROFILE ".dsh\profiles\node_modules\@deepseek-ai\dsh-session-delete\lib\index.js")
 Write-Host ("看板插件包                    : " + $(if ($pluginOk) { "已安装" } else { "未安装" }))
-$cfgOk = (Test-Path $PatchYml) -and ((Get-Content $PatchYml -Raw -ErrorAction SilentlyContinue) -match "ui-kanban")
-Write-Host ("配置行 ui-kanban              : " + $(if ($cfgOk) { "已写入" } else { "未写入" }))
+Write-Host ("宿主删除插件                  : " + $(if ($hostPluginOk) { "已安装" } else { "未安装" }))
+$cfgOk = (Test-Path $PatchYml) -and ((Get-Content $PatchYml -Raw -ErrorAction SilentlyContinue) -match "session-delete")
+Write-Host ("配置行 ui-kanban+session-delete: " + $(if ($cfgOk) { "已写入" } else { "未写入" }))
 
 $installed = ((StateOf $LayoutLive (Join-Path $Root "patch\layout.old.js") (Join-Path $Root "patch\layout.new.js")) -eq "已安装") -and
              ((StateOf $WorkspaceLive (Join-Path $Root "patch\workspace.old.js") (Join-Path $Root "patch\workspace.new.js")) -eq "已安装") -and
              ((StateOf $SidebarLive (Join-Path $Root "patch\sidebar.old.js") (Join-Path $Root "patch\sidebar.new.js")) -eq "已安装") -and
-             $pluginOk -and $cfgOk
+             ((StateOf $ApiRemotesLive (Join-Path $Root "patch\api-remotes.old.js") (Join-Path $Root "patch\api-remotes.new.js")) -eq "已安装") -and
+             $pluginOk -and $hostPluginOk -and $cfgOk
 Write-Host ""
 if ($installed) {
     Write-Host "状态：已完整安装。重启 dsh web 并刷新页面即可使用。"

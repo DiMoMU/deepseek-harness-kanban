@@ -81,3 +81,11 @@
 6. `-Restart` 时调用 `restart.ps1`（按端口 3080 重启并健康探测）。
 
 回滚（`uninstall.ps1`）反向执行：恢复 `.old.js`、删配置行、删插件包；浏览器 localStorage 数据保留。
+
+
+## 8. 删除会话（真删除）
+
+- **宿主插件** `@deepseek-ai/dsh-session-delete`：`SessionDeleteGateway extends TypertRemoteService`，`deleteSession({sessionId})` 永久删除 `$DSH_HOME/sessions/<项目>/<sessionId>/` 目录（sessionId 为 UUID 安全路径段，做了 `../` 与分隔符校验，`force` 幂等）。
+- **远程接口**：插件 `exports["./typert"]`（host 面）+ `exports["./remote"]`（client 面）描述符；`typert-loader` 自动注册 host 面，`dsh-api-remotes` 客户端 bundle 需补丁挂载 `TYPERT_REMOTE$0`。
+- **客户端调用**：看板插件 `inject ["remote"]`，删除动作 = 先 `archiveSession`（隐藏）再 `ctx.remote.sessionDelete.deleteSession({sessionId})`（删文件）。
+- **语义**：删除不可恢复；归档只隐藏、日志保留在磁盘；两者相互独立。
