@@ -22,6 +22,7 @@ foreach ($name in @("install", "uninstall", "verify", "restart")) {
     Copy-Item (Join-Path $Root "scripts\$name.ps1") (Join-Path $Stage "$name.ps1") -Force
     Copy-Item (Join-Path $Root "scripts\$name.cmd") (Join-Path $Stage "$name.cmd") -Force
 }
+Copy-Item (Join-Path $Root "scripts\dsh-root.ps1") (Join-Path $Stage "dsh-root.ps1") -Force
 
 # 4) 清单与说明
 Copy-Item (Join-Path $Root "manifest.json") (Join-Path $Stage "manifest.json") -Force

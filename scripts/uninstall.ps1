@@ -11,32 +11,21 @@ param(
 )
 $ErrorActionPreference = "Stop"
 $Root = $PSScriptRoot
-
-function Resolve-DshRoot {
-    if ($DshRoot) { return $DshRoot }
-    $glob = Get-ChildItem (Join-Path $env:LOCALAPPDATA "npm-cache\_npx") -Directory -ErrorAction SilentlyContinue |
-        ForEach-Object {
-            $p = Join-Path $_.FullName "node_modules\@deepseek-ai\dsh\lib\bin.js"
-            if (Test-Path $p) { return $_.FullName }
-        } | Select-Object -First 1
-    if (-not $glob) { throw "无法定位 DSH 安装树，请用 -DshRoot 指定" }
-    return $glob
-}
-function Get-Hash($p) { (Get-FileHash $p -Algorithm SHA256).Hash }
+. (Join-Path $Root "dsh-root.ps1")
 function Restore-Bundle {
     param([string]$Name, [string]$Live, [string]$Old, [string]$New)
     if (-not (Test-Path $Live)) { Write-Warning "$Name 目标文件不存在，跳过"; return }
-    $hLive = Get-Hash $Live
-    if ($hLive -eq (Get-Hash $Old)) { Write-Host "[跳过] $Name 已是原始版本"; return }
-    if ($hLive -eq (Get-Hash $New)) { Copy-Item $Old $Live -Force; Write-Host "[完成] $Name 已恢复原始版本"; return }
+    $hLive = Get-FileSha256 $Live
+    if ($hLive -eq (Get-FileSha256 $Old)) { Write-Host "[跳过] $Name 已是原始版本"; return }
+    if ($hLive -eq (Get-FileSha256 $New)) { Copy-Item $Old $Live -Force; Write-Host "[完成] $Name 已恢复原始版本"; return }
     Write-Warning "$Name 与已补丁基线不匹配，未覆盖（可能被其他修改占用）"
 }
 
-$DshRoot = Resolve-DshRoot
+$DshRoot = Resolve-DshRoot -ExplicitRoot $DshRoot
 if (-not $Profile) { $Profile = Join-Path $env:USERPROFILE ".dsh\profiles\web" }
-$LayoutLive = Join-Path $DshRoot "node_modules\@deepseek-ai\dsh-client-ui-layout\lib\client.js"
-$WorkspaceLive = Join-Path $DshRoot "node_modules\@deepseek-ai\dsh-client-ui-workspace\lib\client.js"
-$SidebarLive = Join-Path $DshRoot "node_modules\@deepseek-ai\dsh-client-ui-sidebar\lib\client.js"
+$LayoutLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-client-ui-layout" -RelativePath "lib\client.js"
+$WorkspaceLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-client-ui-workspace" -RelativePath "lib\client.js"
+$SidebarLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-client-ui-sidebar" -RelativePath "lib\client.js"
 $PluginDest = Join-Path $env:USERPROFILE ".dsh\profiles\node_modules\@deepseek-ai\dsh-client-ui-kanban"
 $PatchYml = Join-Path $Profile "cordis.patch.yml"
 

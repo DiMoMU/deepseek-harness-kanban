@@ -11,20 +11,11 @@ param(
     [int]$Port = 3080
 )
 $ErrorActionPreference = "Stop"
+$Root = $PSScriptRoot
+. (Join-Path $Root "dsh-root.ps1")
 
-function Resolve-DshRoot {
-    if ($DshRoot) { return $DshRoot }
-    $glob = Get-ChildItem (Join-Path $env:LOCALAPPDATA "npm-cache\_npx") -Directory -ErrorAction SilentlyContinue |
-        ForEach-Object {
-            $p = Join-Path $_.FullName "node_modules\@deepseek-ai\dsh\lib\bin.js"
-            if (Test-Path $p) { return $_.FullName }
-        } | Select-Object -First 1
-    if (-not $glob) { throw "无法定位 DSH 安装树，请用 -DshRoot 指定" }
-    return $glob
-}
-
-$DshRoot = Resolve-DshRoot
-$entry = Join-Path $DshRoot "node_modules\@deepseek-ai\dsh\lib\bin.js"
+$DshRoot = Resolve-DshRoot -ExplicitRoot $DshRoot
+$entry = Get-DshEntryPath $DshRoot
 if (-not (Test-Path $entry)) { throw "未找到 dsh 入口: $entry" }
 if (-not $Workspace) { $Workspace = (Get-Location).Path }
 
