@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DSH 会话看板列 · 布局示例图 v4</title>
+<style>
+  :root {
+    --bg: #fbfcfe;
+    --surface: #ffffff;
+    --sidebar-fill: #eef1f6;
+    --rail: #f4f6fa;
+    --ink: #1b2436;
+    --text-2: #46536b;
+    --muted: #7c8798;
+    --line: rgba(27, 36, 54, .10);
+    --line-2: rgba(27, 36, 54, .16);
+    --accent: #2f6fed;
+    --accent-soft: rgba(47, 111, 237, .10);
+    --todo: #2f6fed;
+    --doing: #d97706;
+    --done: #0f766e;
+    --danger: #dc2626;
+    --radius: 10px;
+    --shadow: 0 12px 32px rgba(27, 36, 54, .14);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; }
+
+  /* ── 四栏框架：项目列表 | 看板 | 对话 | 详情 ─────── */
+  .frame {
+    display: grid; height: 100vh;
+    grid-template-columns: 300px 600px minmax(0, 1fr) 0px;
+    transition: grid-template-columns .3s ease;
+  }
+  .frame.kanban-hidden { grid-template-columns: 300px 0px minmax(0, 1fr) 0px; }
+  .frame.details-open { grid-template-columns: 300px 600px minmax(0, 1fr) 320px; }
+
+  .col { min-width: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .proj-col { background: var(--sidebar-fill); border-right: 1px solid var(--line); }
+  .kanban-col { background: var(--rail); border-right: 1px solid var(--line); }
+  .center-col { background: var(--bg); }
+  .details-col { background: var(--surface); border-left: 1px solid var(--line); }
+
+  .col-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px; border-bottom: 1px solid var(--line);
+    font-size: 13px; font-weight: 600; white-space: nowrap;
+  }
+  .col-head .spacer { flex: 1; }
+  .icon-btn {
+    border: 1px solid var(--line); background: var(--surface); color: var(--text-2);
+    border-radius: 8px; height: 26px; padding: 0 8px; font-size: 12px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+  }
+  .icon-btn:hover { border-color: var(--line-2); color: var(--ink); }
+  .icon-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* ── 项目列表：项目(一级) → 模块复选框(二级) ─────── */
+  .proj-body { flex: 1; overflow-y: auto; padding: 8px; }
+  .hint { font-size: 11px; color: var(--muted); background: var(--accent-soft); border-radius: 8px; padding: 6px 8px; margin-bottom: 8px; line-height: 1.5; }
+  .proj { border-radius: 8px; border: 1px solid transparent; margin-bottom: 4px; }
+  .proj.active { border-color: rgba(47,111,237,.35); background: rgba(255,255,255,.55); }
+  .proj-head {
+    display: flex; align-items: center; gap: 8px; padding: 8px 10px; cursor: pointer;
+    user-select: none; border-radius: 8px;
+  }
+  .proj-head:hover { background: rgba(255,255,255,.7); }
+  .proj .chev { color: var(--muted); font-size: 10px; width: 12px; transition: transform .15s; }
+  .proj.open .chev { transform: rotate(90deg); }
+  .proj .name { flex: 1; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .proj .cnt { font-size: 11px; color: var(--muted); }
+
+  .mods { padding: 2px 6px 8px 26px; display: flex; flex-direction: column; gap: 2px; }
+  .mods label {
+    display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding: 4px 6px;
+    cursor: pointer; border-radius: 6px;
+  }
+  .mods label:hover { background: var(--accent-soft); }
+  .mods label.f-all { font-weight: 700; border-bottom: 1px solid var(--line); border-radius: 0; margin-bottom: 2px; }
+  .mods label input { accent-color: var(--accent); }
+  .mods .f-new { display: flex; gap: 6px; padding: 6px 4px 0; }
+  .mods .f-new input { flex: 1; font-size: 12px; padding: 4px 6px; border: 1px solid var(--line-2); border-radius: 6px; min-width: 0; }
+  .mods .f-new button { border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 6px; font-size: 12px; padding: 3px 8px; cursor: pointer; }
+  .mods .f-empty { font-size: 11.5px; color: var(--muted); padding: 4px; }
+
+  /* ── 看板列：横向均分三个列表，各自滚动 ─────────── */
+  .kanban-lists { flex: 1; display: flex; overflow: hidden; }
+  .klist { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; border-right: 1px solid var(--line); }
+  .klist:last-child { border-right: none; }
+  .klist.drag-over { background: var(--accent-soft); }
+  .klist-head {
+    display: flex; align-items: center; gap: 6px; padding: 8px 10px;
+    font-size: 12px; font-weight: 700; letter-spacing: .02em;
+    border-bottom: 1px solid var(--line); background: var(--surface);
+  }
+  .klist-head .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .klist-head .count { margin-left: auto; color: var(--muted); font-weight: 600; font-size: 11px; }
+  .klist-body { flex: 1; overflow-y: auto; padding: 6px; display: flex; flex-direction: column; gap: 6px; }
+  .klist.empty .klist-body::after { content: "无会话"; color: var(--muted); font-size: 11px; text-align: center; padding: 12px 0; }
+
+  .group-title { font-size: 11px; color: var(--muted); padding: 4px 2px 0; font-weight: 600; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line-2); border-radius: 8px;
+    padding: 7px 9px; font-size: 12.5px; cursor: grab; position: relative;
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .card:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(27,36,54,.08); }
+  .card.dragging { opacity: .45; }
+  .card.opened { border-color: var(--accent); background: var(--accent-soft); }
+  .card .row1 { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .card .title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+  .card .row2 { display: flex; align-items: center; gap: 6px; margin-top: 1px; }
+  .card .chip { font-size: 10.5px; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 1px 7px; white-space: nowrap; }
+  .card .chip.none { color: var(--muted); background: rgba(27,36,54,.06); }
+  .card .time { font-size: 10.5px; color: var(--muted); }
+  .card .menu-btn { border: none; background: transparent; color: var(--muted); cursor: pointer; border-radius: 5px; width: 20px; height: 20px; font-size: 13px; line-height: 1; }
+  .card .menu-btn:hover { background: rgba(27,36,54,.08); color: var(--ink); }
+  .card .card-menu {
+    position: absolute; right: 8px; top: 26px; z-index: 30;
+    background: var(--surface); border: 1px solid var(--line-2); border-radius: 8px;
+    box-shadow: var(--shadow); padding: 8px; display: flex; flex-direction: column; gap: 6px; width: 170px;
+  }
+  .card .card-menu label { font-size: 11px; color: var(--muted); }
+  .card .card-menu select { width: 100%; font-size: 12px; padding: 3px; border: 1px solid var(--line-2); border-radius: 6px; }
+  .card .card-menu button { border: 1px solid var(--line); background: var(--surface); border-radius: 6px; font-size: 12px; padding: 3px 6px; cursor: pointer; color: var(--text-2); }
+  .card .card-menu button.remove { color: var(--danger); border-color: rgba(220,38,38,.35); }
+
+  /* ── 占位/说明 ──────────────────────────────────── */
+  .placeholder { flex: 1; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
+  .pill { border: 1px dashed var(--line-2); border-radius: 999px; padding: 4px 12px; }
+  .demo-bar {
+    position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 50;
+    background: var(--surface); border: 1px solid var(--line-2); border-radius: 999px;
+    box-shadow: var(--shadow); padding: 6px 14px; font-size: 12px; color: var(--text-2);
+    display: flex; gap: 10px; align-items: center;
+  }
+  .demo-bar b { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="frame" id="frame">
+
+  <!-- ① 项目列表（最左）：项目(一级) → 模块复选框(二级) -->
+  <section class="col proj-col">
+    <div class="col-head"><span>项目</span><span class="spacer"></span><button class="icon-btn">+ 新建</button></div>
+    <div class="proj-body">
+      <div class="hint">点选项目（看板单项目）；展开项目勾选模块（多选/全选/新建），看板只显示选中模块的会话</div>
+      <div id="projList"></div>
+    </div>
+  </section>
+
+  <!-- ② 看板列（新）：只放看板，横向均分三个列表 -->
+  <section class="col kanban-col">
+    <div class="col-head">
+      <span id="kanbanTitle">看板 · 未选项目</span>
+      <span class="spacer"></span>
+      <button class="icon-btn primary" id="newSessionBtn" title="在看板中新建会话">＋新建会话</button>
+      <button class="icon-btn" id="toggleKanban" title="折叠看板列">»</button>
+    </div>
+    <div class="kanban-lists" id="kanbanLists">
+      <div class="klist" data-zone="todo">
+        <div class="klist-head"><span class="dot" style="background:#2f6fed"></span>待执行<span class="count">0</span></div>
+        <div class="klist-body"></div>
+      </div>
+      <div class="klist" data-zone="doing">
+        <div class="klist-head"><span class="dot" style="background:#d97706"></span>执行中<span class="count">0</span></div>
+        <div class="klist-body"></div>
+      </div>
+      <div class="klist" data-zone="done">
+        <div class="klist-head"><span class="dot" style="background:#0f766e"></span>已完毕<span class="count">0</span></div>
+        <div class="klist-body"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ 主对话区（现有） -->
+  <section class="col center-col">
+    <div class="col-head"><span>对话</span><span class="spacer"></span><button class="icon-btn" id="toggleDetails">详情</button></div>
+    <div class="placeholder" id="centerStatus"><span class="pill">主对话区（保持不变）· 点击看板卡片在此打开会话</span></div>
+  </section>
+
+  <!-- ④ 详情列（现有） -->
+  <section class="col details-col">
+    <div class="col-head"><span>详情</span><span class="spacer"></span></div>
+    <div class="placeholder"><span class="pill">详情栏（保持不变）</span></div>
+  </section>
+</div>
+
+<div class="demo-bar">
+  <span>项目列表：项目 → <b>模块复选框（二级）</b> · 看板列<b>只放看板</b>、<b>横向均分三列</b>（待执行｜执行中｜已完毕）、<b>各自滚动</b> · 卡片点击打开、可拖拽换列</span>
+</div>
+
+<script>
+"use strict";
+/* ── 演示数据 ─────────────────────────────────────── */
+const PROJECTS = [
+  { id: "pA", title: "项目A" },
+  { id: "pB", title: "项目B" }
+];
+const SESSIONS = [
+  { id: "s1", title: "会话1：环境搭建", project: "pA", time: "2分钟前" },
+  { id: "s2", title: "会话2：接口联调", project: "pA", time: "8分钟前" },
+  { id: "s3", title: "会话3：页面还原", project: "pA", time: "12分钟前" },
+  { id: "s4", title: "会话4：数据迁移", project: "pB", time: "20分钟前" },
+  { id: "s5", title: "会话5：性能优化", project: "pA", time: "1小时前" }
+];
+const ZONES = [
+  { id: "todo",  label: "待执行", color: "#2f6fed" },
+  { id: "doing", label: "执行中", color: "#d97706" },
+  { id: "done",  label: "已完毕", color: "#0f766e" }
+];
+
+const LS_KEY = "dsh.kanban.demo.v4";
+let state = load();
+
+function load() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) { const p = JSON.parse(raw); if (p && typeof p === "object") return p; }
+  } catch (e) { /* ignore */ }
+  return {
+    current: "pA",
+    open: { pA: true, pB: false },
+    meta: { s1: { status: "done",  module: "模块A" }, s2: { status: "doing", module: "模块A" },
+            s3: { status: "todo",  module: "模块B" }, s5: { status: "todo",  module: "模块A" },
+            s4: { status: "todo",  module: "模块C" } },
+    hidden: [],
+    modules: { pA: ["模块A", "模块B"], pB: ["模块C"] },
+    filter: { pA: null, pB: null }   // null = 全选；数组 = 多选
+  };
+}
+function save() { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+
+/* ── 拖拽（看板内卡片跨列） ───────────────────────── */
+let draggedId = null;
+document.addEventListener("dragstart", (e) => {
+  const id = e.target && e.target.dataset ? e.target.dataset.session : null;
+  if (!id) return;
+  draggedId = id;
+  e.dataTransfer.effectAllowed = "move";
+  e.dataTransfer.setData("text/plain", id);
+  e.target.classList.add("dragging");
+});
+document.addEventListener("dragend", (e) => {
+  e.target && e.target.classList && e.target.classList.remove("dragging");
+  draggedId = null;
+});
+
+/* ── 渲染：项目列表（一级项目 + 二级模块复选框） ───── */
+function renderProjects() {
+  const el = document.getElementById("projList");
+  el.innerHTML = "";
+  for (const p of PROJECTS) {
+    const mods = state.modules[p.id] || [];
+    const sel = state.filter[p.id] || mods;
+
+    const wrap = document.createElement("div");
+    wrap.className = "proj" + (p.id === state.current ? " active" : "") + (state.open[p.id] ? " open" : "");
+
+    const head = document.createElement("div");
+    head.className = "proj-head";
+    const cnt = SESSIONS.filter((s) => s.project === p.id).length;
+    head.innerHTML = `<span class="chev">▶</span><span class="name">${p.title}</span><span class="cnt">${cnt} 会话 · ${mods.length} 模块</span>`;
+    head.addEventListener("click", () => {
+      state.current = p.id;
+      state.open[p.id] = !state.open[p.id];
+      save(); renderProjects(); renderKanban();
+    });
+    wrap.appendChild(head);
+
+    if (state.open[p.id]) {
+      const modsEl = document.createElement("div");
+      modsEl.className = "mods";
+      let html = `<label class="f-all"><input type="checkbox" id="fAll-${p.id}" ${sel.length === mods.length ? "checked" : ""}><span>全选</span></label>`;
+      if (!mods.length) html += `<div class="f-empty">暂无模块，请在下方新建</div>`;
+      for (const m of mods) {
+        html += `<label><input type="checkbox" data-mod="${m}" ${sel.includes(m) ? "checked" : ""}><span>${m}</span></label>`;
+      }
+      html += `<div class="f-new"><input placeholder="新建模块…" /><button>＋</button></div>`;
+      modsEl.innerHTML = html;
+
+      const apply = () => {
+        const checked = [...modsEl.querySelectorAll("input[data-mod]:checked")].map((i) => i.dataset.mod);
+        state.filter[p.id] = checked.length === mods.length ? null : checked;
+        save(); renderKanban();
+        modsEl.querySelector(`#fAll-${p.id}`).checked = checked.length === mods.length;
+      };
+      modsEl.querySelector(`#fAll-${p.id}`).addEventListener("change", (e) => {
+        for (const i of modsEl.querySelectorAll("input[data-mod]")) i.checked = e.target.checked;
+        apply();
+      });
+      for (const i of modsEl.querySelectorAll("input[data-mod]")) i.addEventListener("change", apply);
+      const addMod = () => {
+        const input = modsEl.querySelector(".f-new input");
+        const name = input.value.trim();
+        if (!name) return;
+        if (!state.modules[p.id].includes(name)) state.modules[p.id].push(name);
+        state.filter[p.id] = null;   // 新建后默认全选
+        input.value = "";
+        save(); renderProjects(); renderKanban();
+      };
+      modsEl.querySelector(".f-new button").addEventListener("click", addMod);
+      modsEl.querySelector(".f-new input").addEventListener("keydown", (e) => { if (e.key === "Enter") addMod(); });
+      wrap.appendChild(modsEl);
+    }
+    el.appendChild(wrap);
+  }
+}
+
+/* ── 渲染：看板（三列均分，各自滚动） ─────────────── */
+function renderKanban() {
+  const cur = state.current;
+  const mods = state.modules[cur] || [];
+  const sel = state.filter[cur] || mods;
+  document.getElementById("kanbanTitle").textContent = "看板 · " + (PROJECTS.find((p) => p.id === cur)?.title || cur);
+
+  for (const z of ZONES) {
+    const listEl = document.querySelector(`.klist[data-zone="${z.id}"]`);
+    const bodyEl = listEl.querySelector(".klist-body");
+    const countEl = listEl.querySelector(".count");
+
+    const items = Object.entries(state.meta)
+      .filter(([id, m]) => m.status === z.id && !state.hidden.includes(id)
+        && SESSIONS.find((s) => s.id === id)?.project === cur)
+      .map(([id, m]) => ({ id, m }));
+    countEl.textContent = items.length;
+    listEl.classList.toggle("empty", items.length === 0);
+
+    bodyEl.innerHTML = "";
+    const groups = {};
+    for (const { id, m } of items) {
+      if (m.module && !sel.includes(m.module)) continue;   // 未选中模块的会话隐藏
+      const key = m.module || "未分组";
+      (groups[key] = groups[key] || []).push(id);
+    }
+    for (const [mod, ids] of Object.entries(groups)) {
+      const g = document.createElement("div");
+      g.className = "group-title";
+      g.textContent = mod === "未分组" ? "未分组" : "▸ " + mod;
+      bodyEl.appendChild(g);
+      for (const id of ids) bodyEl.appendChild(card(id));
+    }
+  }
+}
+
+function card(id) {
+  const s = SESSIONS.find((x) => x.id === id);
+  const m = state.meta[id];
+  const el = document.createElement("div");
+  el.className = "card" + (state.opened === id ? " opened" : "");
+  el.draggable = true;
+  el.dataset.session = id;
+  el.innerHTML = `
+    <div class="row1">
+      <span class="title" title="点击打开会话">${s.title}</span>
+    </div>
+    <div class="row2">
+      <span class="chip ${m.module ? "" : "none"}">${m.module || "未分组"}</span>
+      <span class="time">${s.time}</span>
+      <button class="menu-btn" data-menu="${id}">⋯</button>
+    </div>`;
+  el.querySelector(".title").addEventListener("click", () => {
+    state.opened = id;
+    save(); renderKanban();
+    document.getElementById("centerStatus").innerHTML =
+      `<span class="pill" style="color:var(--accent)">已打开：${s.title}（主对话区）</span>`;
+  });
+  const menu = document.createElement("div");
+  menu.className = "card-menu"; menu.hidden = true;
+  menu.innerHTML = `
+    <label>功能模块</label>
+    <select>${moduleOptions(m.module)}</select>
+    <button class="remove">从看板移除</button>`;
+  el.appendChild(menu);
+  el.querySelector(".menu-btn").addEventListener("click", (e) => { e.stopPropagation(); menu.hidden = !menu.hidden; });
+  el.querySelector("select").addEventListener("change", (e) => {
+    m.module = e.target.value === "__none__" ? null : e.target.value;
+    if (m.module && !state.modules[state.current].includes(m.module)) state.modules[state.current].push(m.module);
+    save(); renderKanban(); renderProjects();
+  });
+  el.querySelector(".remove").addEventListener("click", () => {
+    delete state.meta[id];
+    state.hidden.push(id);
+    save(); renderKanban();
+  });
+  return el;
+}
+function moduleOptions(current) {
+  const mods = state.modules[state.current] || [];
+  let html = `<option value="__none__">未分组</option>`;
+  for (const m of mods) html += `<option value="${m}" ${m === current ? "selected" : ""}>${m}</option>`;
+  return html;
+}
+
+/* ── 三个列表的 drop 目标 ─────────────────────────── */
+function wireDrop(bodyEl, zoneId) {
+  bodyEl.addEventListener("dragover", (e) => {
+    e.preventDefault(); e.dataTransfer.dropEffect = "move";
+    bodyEl.closest(".klist").classList.add("drag-over");
+  });
+  bodyEl.addEventListener("dragleave", () => bodyEl.closest(".klist").classList.remove("drag-over"));
+  bodyEl.addEventListener("drop", (e) => {
+    e.preventDefault();
+    bodyEl.closest(".klist").classList.remove("drag-over");
+    const id = e.dataTransfer.getData("text/plain") || draggedId;
+    if (!id || !state.meta[id]) return;
+    state.meta[id].status = zoneId;
+    save(); renderKanban();
+  });
+}
+for (const z of ZONES) {
+  wireDrop(document.querySelector(`.klist[data-zone="${z.id}"] .klist-body`), z.id);
+}
+
+/* ── 新建会话（看板内） ───────────────────────────── */
+document.getElementById("newSessionBtn").addEventListener("click", () => {
+  const cur = state.current;
+  const id = "s" + Date.now();
+  SESSIONS.push({ id, title: "会话" + SESSIONS.length + "：新建", project: cur, time: "刚刚" });
+  state.meta[id] = { status: "todo", module: null };
+  state.opened = id;
+  save(); renderAll();
+  document.getElementById("centerStatus").innerHTML =
+    `<span class="pill" style="color:var(--accent)">已新建并打开：${SESSIONS[SESSIONS.length - 1].title}</span>`;
+});
+
+/* ── 折叠与详情列 ─────────────────────────────────── */
+document.getElementById("toggleKanban").addEventListener("click", () => {
+  document.getElementById("frame").classList.toggle("kanban-hidden");
+});
+document.getElementById("toggleDetails").addEventListener("click", () => {
+  document.getElementById("frame").classList.toggle("details-open");
+});
+
+function renderAll() { renderProjects(); renderKanban(); }
+renderAll();
+</script>
+</body>
+</html>
