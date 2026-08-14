@@ -25,10 +25,9 @@ function Apply-Bundle {
     $hLive = Get-FileSha256 $Live
     if ($hLive -eq (Get-FileSha256 $New)) { Write-Host "[跳过] $Name 已安装补丁"; return $true }
     if ($hLive -eq (Get-FileSha256 $Old)) { Copy-Item $New $Live -Force; Write-Host "[完成] $Name 已应用补丁"; return $true }
-    if ($Force) { Copy-Item $New $Live -Force; Write-Host "[强制] $Name 与基线不匹配，已强制覆盖"; return $true }
-    Write-Warning "$Name 与安装包基线（版本 $($manifest.target.layout) 原始/已补丁）均不匹配——可能已被上游升级或人工修改。"
-    Write-Warning "如确定本机就是目标版本，可加 -Force 强制覆盖（若版本不同，UI 可能异常，请先卸载）。"
-    return $false
+    Copy-Item $New $Live -Force
+    Write-Host "[覆盖] $Name 与基线不匹配（版本核验已通过），按本项目插件直接覆盖安装"
+    return $true
 }
 
 $DshRoot = Resolve-DshRoot -ExplicitRoot $DshRoot
