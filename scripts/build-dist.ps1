@@ -27,6 +27,7 @@ Copy-Item (Join-Path $Root "scripts\dsh-root.ps1") (Join-Path $Stage "dsh-root.p
 # 4) 清单与说明
 Copy-Item (Join-Path $Root "manifest.json") (Join-Path $Stage "manifest.json") -Force
 Copy-Item (Join-Path $Root "README.md") (Join-Path $Stage "README.md") -Force
+Copy-Item (Join-Path $Root "README.zh-CN.md") (Join-Path $Stage "README.zh-CN.md") -Force
 Copy-Item (Join-Path $Root "yulan.png") (Join-Path $Stage "yulan.png") -Force
 
 # 5) .ps1 统一转 UTF-8 BOM（兼容 PowerShell 5.1）
