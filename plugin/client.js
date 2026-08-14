@@ -341,6 +341,7 @@ window.__ModuleLoader__.load({
 			}, []);
 			const list = useSessions((s) => s);
 			const workspaces = useWorkspaces((s) => s.items);
+			const archived = useWorkspaces((s) => s.archivedSessionIds) || [];
 			const current = st.current || null;
 			const ws = current === null ? void 0 : workspaces.find((w) => w.workspaceId === current);
 			const mods = (st.modules && st.modules[current]) || [];
@@ -392,6 +393,7 @@ window.__ModuleLoader__.load({
 				if (ws) {
 					for (const id of ws.sessionIds || []) {
 						if (hidden.includes(id)) continue;
+						if (archived.includes(id)) continue;
 						const node = list.byId[id];
 						if (!node) continue;
 						const m = meta[id];
@@ -403,7 +405,7 @@ window.__ModuleLoader__.load({
 					}
 				}
 				return out;
-			}, [ws, list, meta, sel, hidden]);
+			}, [ws, list, meta, sel, hidden, archived]);
 			return react_jsx_runtime.jsx("div", {
 				className: "dsh-kb",
 				children: [
