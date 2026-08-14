@@ -1,4 +1,7 @@
 ﻿
+## 1.3.1 — 2026-08-14
+
+- 安装器：版本核验通过后，bundle 基线不匹配时改为**直接覆盖安装**（不再中止），解决不同安装渠道构建差异导致的误报。
 ## 1.3.0 — 2026-08-14
 
 - 新增 **真删除会话**：宿主插件 `@deepseek-ai/dsh-session-delete`（typert Remote `sessionDelete/deleteSession`，永久删除会话日志目录）+ 补丁 `dsh-api-remotes` 客户端注册远程接口 + 卡片菜单「删除」（危险色 + 二次确认）。

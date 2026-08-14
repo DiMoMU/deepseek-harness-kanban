@@ -1,8 +1,9 @@
 {
   "name": "dsh-kanban-installer",
   "description": "DSH Web GUI 会话看板改造一键安装包（项目列表右侧三列看板 + 真删除会话）",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "changelog": [
+    "1.3.1: 安装器基线不匹配时（版本核验通过）改为直接覆盖安装，不再中止",
     "1.3.0: 新增真删除会话（宿主插件 dsh-session-delete + api-remotes 远程接口 + 卡片菜单删除）；README 补充设计理念与项目管理优势；双语 README 改为点击切换",
     "1.2.0: 卡片菜单重做（重命名/分叉/归档）；修复看板折叠后无法再展开；移除侧栏重复新建会话按钮；合并 deepseekc 安装器修复（自定义 SHA256 / npm 全局+嵌套依赖 / ASCII cmd / 保留退出码）",
     "1.1.0: 卡片两行排版；拖拽流畅化；修复 TDZ 渲染崩溃；新增 verify.ps1",
