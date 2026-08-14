@@ -10,7 +10,7 @@ Remove-Item $Stage -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path (Join-Path $Stage "patch"), (Join-Path $Stage "plugin\lib") | Out-Null
 
 # 1) 补丁基线
-Copy-Item (Join-Path $Root "patch\layout.old.js"),(Join-Path $Root "patch\layout.new.js"),(Join-Path $Root "patch\workspace.old.js"),(Join-Path $Root "patch\workspace.new.js") (Join-Path $Stage "patch\") -Force
+Copy-Item (Join-Path $Root "patch\layout.old.js"),(Join-Path $Root "patch\layout.new.js"),(Join-Path $Root "patch\sidebar.old.js"),(Join-Path $Root "patch\sidebar.new.js"),(Join-Path $Root "patch\workspace.old.js"),(Join-Path $Root "patch\workspace.new.js") (Join-Path $Stage "patch\") -Force
 
 # 2) 插件包（安装器布局：package.json + lib/）
 Copy-Item (Join-Path $Root "plugin\package.json") (Join-Path $Stage "plugin\package.json") -Force
@@ -26,6 +26,7 @@ foreach ($name in @("install", "uninstall", "verify", "restart")) {
 # 4) 清单与说明
 Copy-Item (Join-Path $Root "manifest.json") (Join-Path $Stage "manifest.json") -Force
 Copy-Item (Join-Path $Root "README.md") (Join-Path $Stage "README.md") -Force
+Copy-Item (Join-Path $Root "yulan.png") (Join-Path $Stage "yulan.png") -Force
 
 # 5) .ps1 统一转 UTF-8 BOM（兼容 PowerShell 5.1）
 $utf8Bom = New-Object System.Text.UTF8Encoding $true

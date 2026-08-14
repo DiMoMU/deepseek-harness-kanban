@@ -1,6 +1,6 @@
-{
+﻿{
   "name": "dsh-session-kanban",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Session kanban column for the DeepSeek Harness (dsh) web UI: three scrollable lists (todo/doing/done), per-project module filtering, drag & drop, and a one-click installer that patches the stock dsh web bundles.",
   "license": "MIT",
   "keywords": [

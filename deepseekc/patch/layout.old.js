@@ -22,43 +22,38 @@ window.__ModuleLoader__.load({
 			return Math.min(max, Math.max(min, Math.round(px)));
 		}
 		/**
-		* Solve the four column widths for one viewport frame. Pure: no hysteresis —
+		* Solve the three column widths for one viewport frame. Pure: no hysteresis —
 		* the output is a function of (viewport, preferences) only, so recovery on
 		* re-widening is automatic. Preferences re-clamp here because they cross the
 		* store boundary and callers may still supply stale ranges.
 		* @param viewport - available frame width in px.
-		* @param kanban - kanban width preference in px (0 = closed).
 		* @param sidebar - sidebar width preference in px (0 = closed).
 		* @param details - details width preference in px (0 = closed).
 		* @returns resolved widths; details 0 means visually closed (never unmounted), while a closed sidebar keeps its compact rail.
 		*/
-		function computeColumns(viewport, kanban, sidebar, details) {
-			const k = kanban === 0 ? 0 : clampWidth(kanban, 480, 760);
+		function computeColumns(viewport, sidebar, details) {
 			const s = sidebar === 0 ? 56 : clampWidth(sidebar, 264, 420);
 			const d0 = details === 0 ? 0 : clampWidth(details, 300, 520);
-			if (k + s + d0 + 640 <= viewport) return {
-				kanban: k,
+			if (s + d0 + 640 <= viewport) return {
 				sidebar: s,
-				center: viewport - k - s - d0,
+				center: viewport - s - d0,
 				details: d0
 			};
-			const d1 = d0 === 0 ? 0 : Math.max(300, viewport - k - s - 640);
-			if (k + s + d1 + 640 <= viewport) return {
-				kanban: k,
+			const d1 = d0 === 0 ? 0 : Math.max(300, viewport - s - 640);
+			if (s + d1 + 640 <= viewport) return {
 				sidebar: s,
 				center: 640,
 				details: d1
 			};
 			return {
-				kanban: k,
 				sidebar: s,
-				center: Math.max(0, viewport - k - s),
+				center: Math.max(0, viewport - s),
 				details: 0
 			};
 		}
 		//#endregion
 		//#region \0dsh-css:/home/runner/work/deepseek-harness/deepseek-harness/packages/client/ui-layout/src/client/AppFrame.module.css.mjs
-		const css = ".pI_x6G_frame{background:var(--dsw-alias-bg-base);height:100%;transition:grid-template-columns var(--ds-transition-duration-slow) var(--ds-ease-in-out);grid-template-rows:100%;display:grid;position:relative;overflow:hidden}.pI_x6G_frame[data-dragging]{transition:none}@media (prefers-reduced-motion:reduce){.pI_x6G_frame{transition:none}}.pI_x6G_sidebarCol{background:var(--dsw-specific-sidebar-fill);border-right:1px solid var(--dsw-alias-border-l1);min-width:0;overflow:hidden}.pI_x6G_centerCol{flex-direction:column;min-width:0;display:flex;overflow:hidden}.pI_x6G_detailsCol{border-left:1px solid var(--dsw-alias-border-l2);min-width:0;overflow:hidden}.pI_x6G_frame[data-details-collapsed] .pI_x6G_detailsCol{border-left:none}.pI_x6G_kanbanCol{background:var(--dsw-specific-sidebar-fill);border-right:1px solid var(--dsw-alias-border-l1);min-width:0;overflow:hidden}.pI_x6G_frame[data-kanban-collapsed] .pI_x6G_kanbanCol{border-right:none}.pI_x6G_kanbanExpand{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:16px;height:44px;border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-secondary);border-radius:0 10px 10px 0;cursor:pointer;font-size:12px;padding:0;opacity:.75}.pI_x6G_kanbanExpand:hover{opacity:1;color:var(--dsw-alias-label-primary);border-color:var(--dsw-alias-border-l3)}.pI_x6G_handle{cursor:col-resize;z-index:2;touch-action:none;width:8px;transition:left var(--ds-transition-duration-slow) var(--ds-ease-in-out);margin-left:-4px;position:absolute;top:0;bottom:0}.pI_x6G_frame[data-dragging] .pI_x6G_handle{transition:none}@media (prefers-reduced-motion:reduce){.pI_x6G_handle{transition:none}}.pI_x6G_handle[data-side=details]:after{content:\"\";box-sizing:border-box;background:var(--dsw-alias-button-floating-fill);border:1px solid var(--dsw-alias-border-l2-darkmode-thin);opacity:0;width:12px;height:32px;transition:opacity var(--ds-transition-duration-slow) var(--ds-ease-in-out), background var(--ds-transition-duration-slow) var(--ds-ease-in-out);border-radius:10px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}.pI_x6G_detailsCol:hover~.pI_x6G_handle[data-side=details]:after,.pI_x6G_handle[data-side=details]:hover:after,.pI_x6G_handle[data-side=details][data-dragging=true]:after{opacity:1}.pI_x6G_handle[data-side=details]:hover:after,.pI_x6G_handle[data-side=details][data-dragging=true]:after{background:var(--dsw-alias-button-floating-hover);border-color:var(--dsw-alias-border-l3)}.pI_x6G_overlayLayer{z-index:20;pointer-events:none;position:absolute;inset:0}.pI_x6G_overlayLayer>*{pointer-events:auto}";
+		const css = ".pI_x6G_frame{background:var(--dsw-alias-bg-base);height:100%;transition:grid-template-columns var(--ds-transition-duration-slow) var(--ds-ease-in-out);grid-template-rows:100%;display:grid;position:relative;overflow:hidden}.pI_x6G_frame[data-dragging]{transition:none}@media (prefers-reduced-motion:reduce){.pI_x6G_frame{transition:none}}.pI_x6G_sidebarCol{background:var(--dsw-specific-sidebar-fill);border-right:1px solid var(--dsw-alias-border-l1);min-width:0;overflow:hidden}.pI_x6G_centerCol{flex-direction:column;min-width:0;display:flex;overflow:hidden}.pI_x6G_detailsCol{border-left:1px solid var(--dsw-alias-border-l2);min-width:0;overflow:hidden}.pI_x6G_frame[data-details-collapsed] .pI_x6G_detailsCol{border-left:none}.pI_x6G_handle{cursor:col-resize;z-index:2;touch-action:none;width:8px;transition:left var(--ds-transition-duration-slow) var(--ds-ease-in-out);margin-left:-4px;position:absolute;top:0;bottom:0}.pI_x6G_frame[data-dragging] .pI_x6G_handle{transition:none}@media (prefers-reduced-motion:reduce){.pI_x6G_handle{transition:none}}.pI_x6G_handle[data-side=details]:after{content:\"\";box-sizing:border-box;background:var(--dsw-alias-button-floating-fill);border:1px solid var(--dsw-alias-border-l2-darkmode-thin);opacity:0;width:12px;height:32px;transition:opacity var(--ds-transition-duration-slow) var(--ds-ease-in-out), background var(--ds-transition-duration-slow) var(--ds-ease-in-out);border-radius:10px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}.pI_x6G_detailsCol:hover~.pI_x6G_handle[data-side=details]:after,.pI_x6G_handle[data-side=details]:hover:after,.pI_x6G_handle[data-side=details][data-dragging=true]:after{opacity:1}.pI_x6G_handle[data-side=details]:hover:after,.pI_x6G_handle[data-side=details][data-dragging=true]:after{background:var(--dsw-alias-button-floating-hover);border-color:var(--dsw-alias-border-l3)}.pI_x6G_overlayLayer{z-index:20;pointer-events:none;position:absolute;inset:0}.pI_x6G_overlayLayer>*{pointer-events:auto}";
 		const tagId = "@deepseek-ai/dsh-client-ui-layout/AppFrame.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId) + "]") === null) {
 			const tag = document.createElement("style");
@@ -69,8 +64,6 @@ window.__ModuleLoader__.load({
 		}
 		var AppFrame_module_css_default = {
 			"detailsCol": "pI_x6G_detailsCol",
-			"kanbanCol": "pI_x6G_kanbanCol",
-			"kanbanExpand": "pI_x6G_kanbanExpand",
 			"sidebarCol": "pI_x6G_sidebarCol",
 			"overlayLayer": "pI_x6G_overlayLayer",
 			"handle": "pI_x6G_handle",
@@ -199,12 +192,10 @@ window.__ModuleLoader__.load({
 				actions.setNarrow(narrow);
 			}, [actions, narrow]);
 			const sidebarCollapsed = narrow ? !panels.narrowExpanded : panels.sidebar === 0;
-			const kanbanCollapsed = narrow || panels.kanban === 0;
-			const cols = computeColumns(viewport, kanbanCollapsed ? 0 : panels.kanban === 0 ? 600 : panels.kanban, sidebarCollapsed ? 0 : panels.sidebar === 0 ? 280 : panels.sidebar, detailsSession === void 0 ? 0 : panels.details);
+			const cols = computeColumns(viewport, sidebarCollapsed ? 0 : panels.sidebar === 0 ? 280 : panels.sidebar, detailsSession === void 0 ? 0 : panels.details);
 			const colsRef = (0, react.useRef)(cols);
 			colsRef.current = cols;
 			const sidebarBase = (0, react.useRef)(0);
-			const kanbanBase = (0, react.useRef)(0);
 			const detailsBase = (0, react.useRef)(0);
 			const [dragging, setDragging] = (0, react.useState)(false);
 			const onDragEnd = (0, react.useCallback)(() => {
@@ -214,10 +205,6 @@ window.__ModuleLoader__.load({
 				sidebarBase.current = colsRef.current.sidebar;
 				setDragging(true);
 			}, []);
-			const onKanbanStart = (0, react.useCallback)(() => {
-				kanbanBase.current = colsRef.current.kanban;
-				setDragging(true);
-			}, []);
 			const onDetailsStart = (0, react.useCallback)(() => {
 				detailsBase.current = colsRef.current.details;
 				setDragging(true);
@@ -225,17 +212,13 @@ window.__ModuleLoader__.load({
 			const onSidebarDrag = (0, react.useCallback)((dx) => {
 				actions.setSidebar(sidebarBase.current + dx);
 			}, [actions]);
-			const onKanbanDrag = (0, react.useCallback)((dx) => {
-				actions.setKanban(kanbanBase.current + dx);
-			}, [actions]);
 			const onDetailsDrag = (0, react.useCallback)((dx) => {
 				actions.setDetails(detailsBase.current - dx);
 			}, [actions]);
 			return (0, react_jsx_runtime.jsxs)("div", {
 				ref: frameRef,
 				className: AppFrame_module_css_default.frame,
-				style: { gridTemplateColumns: `${cols.sidebar}px ${cols.kanban}px minmax(0, 1fr) ${cols.details}px` },
-				"data-kanban-collapsed": kanbanCollapsed || void 0,
+				style: { gridTemplateColumns: `${cols.sidebar}px minmax(0, 1fr) ${cols.details}px` },
 				"data-sidebar-collapsed": sidebarCollapsed || void 0,
 				"data-details-collapsed": cols.details === 0 || void 0,
 				"data-dragging": dragging || void 0,
@@ -247,41 +230,17 @@ window.__ModuleLoader__.load({
 							width: cols.sidebar
 						})
 					}),
-					(0, react_jsx_runtime.jsx)("div", {
-						className: AppFrame_module_css_default.kanbanCol,
-						"data-kanban-collapsed": kanbanCollapsed || void 0,
-						children: renderSlot("kanban", {
-							collapsed: kanbanCollapsed,
-							width: cols.kanban
-						})
-					}),
 					(0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [(0, react_jsx_runtime.jsx)(CenterColumn, { children: renderSlot("conversation", {}) }), (0, react_jsx_runtime.jsx)(DetailsColumn, { children: renderSlot("details", {}) })] }),
 					(0, react_jsx_runtime.jsx)("div", {
 						className: AppFrame_module_css_default.overlayLayer,
 						"data-shell-overlay": true,
 						children: renderSlot("shell.overlay", {})
 					}),
-					kanbanCollapsed && !narrow && (0, react_jsx_runtime.jsx)("button", {
-						type: "button",
-						className: AppFrame_module_css_default.kanbanExpand,
-						style: { left: cols.sidebar },
-						"aria-label": "展开看板",
-						title: "展开看板",
-						onClick: () => actions.toggleKanban(),
-						children: "«"
-					}),
 					!sidebarCollapsed && (0, react_jsx_runtime.jsx)(DragHandle, {
 						side: "sidebar",
 						left: cols.sidebar,
 						onStart: onSidebarStart,
 						onDrag: onSidebarDrag,
-						onEnd: onDragEnd
-					}),
-					cols.kanban > 0 && (0, react_jsx_runtime.jsx)(DragHandle, {
-						side: "kanban",
-						left: cols.sidebar + cols.kanban,
-						onStart: onKanbanStart,
-						onDrag: onKanbanDrag,
 						onEnd: onDragEnd
 					}),
 					cols.details > 0 && (0, react_jsx_runtime.jsx)(DragHandle, {
@@ -319,7 +278,6 @@ window.__ModuleLoader__.load({
 			return (0, _deepseek_ai_dsh_client_runtime_client.defineStore)({
 				init: () => ({
 					sidebar: 280,
-					kanban: 600,
 					details: 0,
 					narrow: false,
 					narrowExpanded: false
@@ -327,12 +285,6 @@ window.__ModuleLoader__.load({
 				actions: {
 					setSidebar: (d, px) => {
 						d.sidebar = clampWidth(px, 264, 420);
-					},
-					setKanban: (d, px) => {
-						d.kanban = clampWidth(px, 480, 760);
-					},
-					toggleKanban: (d) => {
-						d.kanban = d.kanban === 0 ? 600 : 0;
 					},
 					setDetails: (d, px) => {
 						d.details = clampWidth(px, 300, 520);
@@ -373,10 +325,6 @@ window.__ModuleLoader__.load({
 			/** Toggle the sidebar panel (closed ⟷ contract default width). */
 			toggleSidebar() {
 				this.#require().toggleSidebar();
-			}
-			/** Toggle the kanban panel (closed ⟷ contract default width). */
-			toggleKanban() {
-				this.#require().toggleKanban();
 			}
 			/** Open the details panel (no-op when already open). */
 			openDetails() {
@@ -457,10 +405,6 @@ window.__ModuleLoader__.load({
 				const disposeRegistration = ctx.slots.register({
 					name: "root",
 					children: {
-						"kanban": {
-							kind: "single",
-							scope: "root"
-						},
 						"sidebar": {
 							kind: "single",
 							scope: "root"

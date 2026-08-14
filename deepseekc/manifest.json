@@ -1,23 +1,19 @@
-{
+﻿{
   "name": "dsh-kanban-installer",
   "description": "DSH Web GUI 会话看板改造一键安装包（项目列表右侧三列看板）",
-  "version": "1.2.0",
+  "version": "1.1.0",
   "changelog": [
-    "1.2.0: 卡片菜单重做（重命名/分叉/归档，点外部或 Esc 关闭，模块选择可选）；修复看板折叠后无法再展开；移除侧栏重复的新建会话按钮（新增 ui-sidebar 补丁基线）",
-    "1.1.0: 卡片两行排版（会话名称独占整行）；拖拽流畅化；修复 TDZ 渲染崩溃；新增 verify.ps1",
+    "1.1.0: 卡片两行排版（会话名称独占整行）；拖拽流畅化（常驻提示条/共享悬停态/memo/rAF 节流）；修复 TDZ 渲染崩溃；新增 verify.ps1 自检",
     "1.0.0: 初始版本（四栏布局、模块复选框二级列表、三列看板、插件与脚本）"
   ],
   "target": {
     "dsh": "0.1.0-rc.6",
     "layout": "0.1.0-rc.6",
-    "workspace": "0.1.0-rc.6",
-    "sidebar": "0.1.0-rc.6"
+    "workspace": "0.1.0-rc.6"
   },
   "files": [
     "patch/layout.old.js",
     "patch/layout.new.js",
-    "patch/sidebar.old.js",
-    "patch/sidebar.new.js",
     "patch/workspace.old.js",
     "patch/workspace.new.js",
     "plugin/package.json",

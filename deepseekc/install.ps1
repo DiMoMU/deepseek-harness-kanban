@@ -5,7 +5,7 @@
 # 参数:
 #   -Restart    安装完成后自动重启 dsh web（推荐）
 #   -Workspace  重启时作为 dsh 工作目录（决定沙箱工作区；默认当前目录）
-#   -DshRoot    DSH 安装树路径（缺省自动探测 npm-cache）
+#   -DshRoot    DSH 安装树路径（缺省自动探测 npm 全局安装和 npx 缓存）
 #   -Profile    dsh web profile 目录（缺省 %USERPROFILE%\.dsh\profiles\web）
 #   -Force      本机 bundle 与基线不匹配时仍强制覆盖（版本不一致风险自负）
 [CmdletBinding()]
@@ -18,38 +18,26 @@ param(
 )
 $ErrorActionPreference = "Stop"
 $Root = $PSScriptRoot
-
-function Resolve-DshRoot {
-    if ($DshRoot) { return $DshRoot }
-    $glob = Get-ChildItem (Join-Path $env:LOCALAPPDATA "npm-cache\_npx") -Directory -ErrorAction SilentlyContinue |
-        ForEach-Object {
-            $p = Join-Path $_.FullName "node_modules\@deepseek-ai\dsh\lib\bin.js"
-            if (Test-Path $p) { return $_.FullName }
-        } | Select-Object -First 1
-    if (-not $glob) { throw "无法定位 DSH 安装树（npm-cache 下未找到 @deepseek-ai/dsh/lib/bin.js）。请先用 npx @deepseek-ai/dsh 启动过一次 dsh web，或用 -DshRoot 手动指定。" }
-    return $glob
-}
-function Get-Hash($p) { (Get-FileHash $p -Algorithm SHA256).Hash }
+. (Join-Path $Root "dsh-root.ps1")
 function Apply-Bundle {
     param([string]$Name, [string]$Live, [string]$Old, [string]$New)
     if (-not (Test-Path $Live)) { throw "缺少文件: $Live（DSH 安装树不完整？）" }
-    $hLive = Get-Hash $Live
-    if ($hLive -eq (Get-Hash $New)) { Write-Host "[跳过] $Name 已安装补丁"; return $true }
-    if ($hLive -eq (Get-Hash $Old)) { Copy-Item $New $Live -Force; Write-Host "[完成] $Name 已应用补丁"; return $true }
+    $hLive = Get-FileSha256 $Live
+    if ($hLive -eq (Get-FileSha256 $New)) { Write-Host "[跳过] $Name 已安装补丁"; return $true }
+    if ($hLive -eq (Get-FileSha256 $Old)) { Copy-Item $New $Live -Force; Write-Host "[完成] $Name 已应用补丁"; return $true }
     if ($Force) { Copy-Item $New $Live -Force; Write-Host "[强制] $Name 与基线不匹配，已强制覆盖"; return $true }
     Write-Warning "$Name 与安装包基线（版本 $($manifest.target.layout) 原始/已补丁）均不匹配——可能已被上游升级或人工修改。"
     Write-Warning "如确定本机就是目标版本，可加 -Force 强制覆盖（若版本不同，UI 可能异常，请先卸载）。"
     return $false
 }
 
-$DshRoot = Resolve-DshRoot
+$DshRoot = Resolve-DshRoot -ExplicitRoot $DshRoot
 if (-not $Profile) { $Profile = Join-Path $env:USERPROFILE ".dsh\profiles\web" }
 if (-not $Workspace) { $Workspace = (Get-Location).Path }
 
 $manifest = Get-Content (Join-Path $Root "manifest.json") -Raw -Encoding UTF8 | ConvertFrom-Json
-$LayoutLive = Join-Path $DshRoot "node_modules\@deepseek-ai\dsh-client-ui-layout\lib\client.js"
-$WorkspaceLive = Join-Path $DshRoot "node_modules\@deepseek-ai\dsh-client-ui-workspace\lib\client.js"
-$SidebarLive = Join-Path $DshRoot "node_modules\@deepseek-ai\dsh-client-ui-sidebar\lib\client.js"
+$LayoutLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-client-ui-layout" -RelativePath "lib\client.js"
+$WorkspaceLive = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-client-ui-workspace" -RelativePath "lib\client.js"
 $PluginDest = Join-Path $env:USERPROFILE ".dsh\profiles\node_modules\@deepseek-ai\dsh-client-ui-kanban"
 $PatchYml = Join-Path $Profile "cordis.patch.yml"
 
@@ -61,7 +49,7 @@ Write-Host "工作目录    : $Workspace"
 Write-Host ""
 
 # 0) 版本核验
-$layoutPkg = Join-Path $DshRoot "node_modules\@deepseek-ai\dsh-client-ui-layout\package.json"
+$layoutPkg = Get-DshModulePath -DshRoot $DshRoot -Name "dsh-client-ui-layout" -RelativePath "package.json"
 if (Test-Path $layoutPkg) {
     $ver = (Get-Content $layoutPkg -Raw | ConvertFrom-Json).version
     Write-Host "本机 dsh-client-ui-layout 版本: $ver （安装包支持: $($manifest.target.layout)）"
@@ -77,8 +65,7 @@ if (Test-Path $layoutPkg) {
 $ok1 = Apply-Bundle -Name "dsh-client-ui-layout" -Live $LayoutLive -Old (Join-Path $Root "patch\layout.old.js") -New (Join-Path $Root "patch\layout.new.js")
 # 2) 项目列表：项目→模块复选框二级列表
 $ok2 = Apply-Bundle -Name "dsh-client-ui-workspace" -Live $WorkspaceLive -Old (Join-Path $Root "patch\workspace.old.js") -New (Join-Path $Root "patch\workspace.new.js")
-$ok3 = Apply-Bundle -Name "dsh-client-ui-sidebar" -Live $SidebarLive -Old (Join-Path $Root "patch\sidebar.old.js") -New (Join-Path $Root "patch\sidebar.new.js")
-if (-not ($ok1 -and $ok2 -and $ok3)) { Write-Host "安装中止：bundle 基线不匹配（可用 -Force 强制，但仅在版本一致时推荐）。"; exit 1 }
+if (-not ($ok1 -and $ok2)) { Write-Host "安装中止：bundle 基线不匹配（可用 -Force 强制，但仅在版本一致时推荐）。"; exit 1 }
 
 # 3) 安装看板插件包（flat fallback，profile 可解析）
 New-Item -ItemType Directory -Force -Path (Join-Path $PluginDest "lib") | Out-Null

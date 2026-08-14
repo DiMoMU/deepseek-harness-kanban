@@ -7,7 +7,7 @@ window.__ModuleLoader__.load({
 		let react_jsx_runtime = require("react/jsx-runtime");
 		let react = require("react");
 		/* ── styles ─────────────────────────────────────────── */
-		const css = ".dsh-kb{display:flex;flex-direction:column;height:100%;min-width:0}.dsh-kb-head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--dsw-alias-border-l1);font-size:13px;font-weight:600;white-space:nowrap;flex:none}.dsh-kb-head-spacer{flex:1}.dsh-kb-btn{border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-secondary);border-radius:8px;height:26px;padding:0 8px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}.dsh-kb-btn:hover{border-color:var(--dsw-alias-border-l2);color:var(--dsw-alias-label-primary)}.dsh-kb-btn.primary{background:var(--dsw-alias-accent,#2f6fed);border-color:transparent;color:#fff}.dsh-kb-btn:disabled{opacity:.5;cursor:default}.dsh-kb-hint{color:var(--dsw-alias-label-secondary);font-size:12.5px;padding:18px 16px;text-align:center;line-height:1.7}.dsh-kb-lists{flex:1;display:flex;overflow:hidden;min-height:0}.dsh-kb-lists.dragging .dsh-kb-list{opacity:.5;transition:opacity .15s ease}.dsh-kb-lists.dragging .dsh-kb-list.drag-over{opacity:1}.dsh-kb-list{flex:1 1 0;min-width:0;display:flex;flex-direction:column;border-right:1px solid var(--dsw-alias-border-l1)}.dsh-kb-list:last-child{border-right:none}.dsh-kb-list.drag-over{background:rgba(47,111,237,.05)}.dsh-kb-list-head{display:flex;align-items:center;gap:6px;padding:8px 10px;font-size:12px;font-weight:700;letter-spacing:.02em;border-bottom:1px solid var(--dsw-alias-border-l1);flex:none;transition:background .12s ease,border-color .12s ease}.dsh-kb-list.drag-over .dsh-kb-list-head{background:rgba(47,111,237,.16);border-color:var(--dsw-alias-accent,#2f6fed)}.dsh-kb-dot{width:8px;height:8px;border-radius:50%;flex:none}.dsh-kb-count{margin-left:auto;color:var(--dsw-alias-label-secondary);font-weight:600;font-size:11px}.dsh-kb-drop-hint{box-sizing:border-box;flex:none;height:0;overflow:hidden;margin:0 6px;padding:0 8px;font-size:11.5px;line-height:16px;color:var(--dsw-alias-accent,#2f6fed);border:1.5px dashed transparent;border-radius:8px;opacity:0;transition:height .12s ease,padding .12s ease,opacity .12s ease}.dsh-kb-drop-hint.show{height:30px;padding:5px 8px;opacity:1;border-color:var(--dsw-alias-accent,#2f6fed);background:rgba(47,111,237,.06)}.dsh-kb-list-body{flex:1;overflow-y:auto;padding:6px;display:flex;flex-direction:column;gap:6px;min-height:0}.dsh-kb-empty{color:var(--dsw-alias-label-secondary);font-size:11px;text-align:center;padding:12px 0}.dsh-kb-group{font-size:11px;color:var(--dsw-alias-label-secondary);padding:4px 2px 0;font-weight:600;flex:none}.dsh-kb-card{background:var(--dsw-alias-bg-base);border:1px solid var(--dsw-alias-border-l2);border-radius:8px;padding:7px 9px;font-size:12.5px;cursor:grab;position:relative;display:flex;flex-direction:column;gap:5px;flex:none;transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease,opacity .12s ease}.dsh-kb-card:hover{border-color:var(--dsw-alias-accent,#2f6fed);box-shadow:0 2px 8px rgba(27,36,54,.1);transform:translateY(-1px)}.dsh-kb-card.open{border-color:var(--dsw-alias-accent,#2f6fed);background:rgba(47,111,237,.08);box-shadow:0 0 0 1px rgba(47,111,237,.22)}.dsh-kb-card.open .dsh-kb-card-title{color:var(--dsw-alias-accent,#2f6fed)}.dsh-kb-card.dragging{opacity:.35;transform:rotate(2deg) scale(.98)}.dsh-kb-card.flash{animation:dsh-kb-flash .9s ease}.dsh-kb-card-row1{display:flex;align-items:center;gap:6px;min-width:0}.dsh-kb-card-row2{display:flex;align-items:center;gap:6px;min-width:0}.dsh-kb-card-grow{flex:1}.dsh-kb-card-dot{width:7px;height:7px;border-radius:50%;flex:none}.dsh-kb-card-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dsw-alias-label-primary)}.dsh-kb-grip{opacity:0;color:var(--dsw-alias-label-secondary);font-size:12px;line-height:1;cursor:grab;flex:none;transition:opacity .12s ease;user-select:none}.dsh-kb-card:hover .dsh-kb-grip,.dsh-kb-card.dragging .dsh-kb-grip{opacity:1}.dsh-kb-chip{font-size:10.5px;color:var(--dsw-alias-accent,#2f6fed);background:rgba(47,111,237,.1);border-radius:999px;padding:1px 7px;white-space:nowrap;flex:none}.dsh-kb-chip.none{color:var(--dsw-alias-label-secondary);background:rgba(27,36,54,.06)}.dsh-kb-card-time{font-size:10.5px;color:var(--dsw-alias-label-secondary)}.dsh-kb-menu-btn{border:none;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;border-radius:5px;width:20px;height:20px;font-size:13px;line-height:1;flex:none;padding:0}.dsh-kb-menu-btn:hover{background:rgba(27,36,54,.08);color:var(--dsw-alias-label-primary)}.dsh-kb-menu{position:absolute;right:8px;top:30px;z-index:30;background:var(--dsw-alias-bg-base);border:1px solid var(--dsw-alias-border-l2);border-radius:8px;box-shadow:0 12px 32px rgba(27,36,54,.14);padding:6px;display:flex;flex-direction:column;gap:2px;width:180px}.dsh-kb-menu label{font-size:11px;color:var(--dsw-alias-label-secondary);padding:4px 6px 2px}.dsh-kb-menu select{width:100%;font-size:12px;padding:3px;border:1px solid var(--dsw-alias-border-l2);border-radius:6px;background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary)}.dsh-kb-menu-item{display:flex;align-items:center;gap:6px;width:100%;border:none;background:transparent;color:var(--dsw-alias-label-primary);font-size:12.5px;padding:5px 6px;border-radius:6px;cursor:pointer;text-align:left}.dsh-kb-menu-item:hover{background:var(--dsw-alias-interactive-bg-hover)}.dsh-kb-menu-divider{height:1px;background:var(--dsw-alias-border-l1);margin:4px 0}.dsh-kb-menu-input{width:100%;font-size:12px;padding:4px 6px;border:1px solid var(--dsw-alias-border-l2);border-radius:6px;background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary)}.dsh-kb-menu-row{display:flex;gap:6px;padding:2px 0}.dsh-kb-menu-row button{flex:1;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-base);border-radius:6px;font-size:12px;padding:3px 6px;cursor:pointer;color:var(--dsw-alias-label-primary)}.dsh-kb-foot{padding:6px 10px;font-size:11px;color:var(--dsw-alias-label-secondary);border-top:1px solid var(--dsw-alias-border-l1);flex:none;text-align:center;user-select:none}@keyframes dsh-kb-flash{0%{background:rgba(47,111,237,.28);box-shadow:0 0 0 2px rgba(47,111,237,.35)}100%{background:var(--dsw-alias-bg-base);box-shadow:none}}";
+		const css = ".dsh-kb{display:flex;flex-direction:column;height:100%;min-width:0}.dsh-kb-head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--dsw-alias-border-l1);font-size:13px;font-weight:600;white-space:nowrap;flex:none}.dsh-kb-head-spacer{flex:1}.dsh-kb-btn{border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-secondary);border-radius:8px;height:26px;padding:0 8px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}.dsh-kb-btn:hover{border-color:var(--dsw-alias-border-l2);color:var(--dsw-alias-label-primary)}.dsh-kb-btn.primary{background:var(--dsw-alias-accent,#2f6fed);border-color:transparent;color:#fff}.dsh-kb-btn:disabled{opacity:.5;cursor:default}.dsh-kb-hint{color:var(--dsw-alias-label-secondary);font-size:12.5px;padding:18px 16px;text-align:center;line-height:1.7}.dsh-kb-lists{flex:1;display:flex;overflow:hidden;min-height:0}.dsh-kb-lists.dragging .dsh-kb-list{opacity:.5;transition:opacity .15s ease}.dsh-kb-lists.dragging .dsh-kb-list.drag-over{opacity:1}.dsh-kb-list{flex:1 1 0;min-width:0;display:flex;flex-direction:column;border-right:1px solid var(--dsw-alias-border-l1)}.dsh-kb-list:last-child{border-right:none}.dsh-kb-list.drag-over{background:rgba(47,111,237,.05)}.dsh-kb-list-head{display:flex;align-items:center;gap:6px;padding:8px 10px;font-size:12px;font-weight:700;letter-spacing:.02em;border-bottom:1px solid var(--dsw-alias-border-l1);flex:none;transition:background .12s ease,border-color .12s ease}.dsh-kb-list.drag-over .dsh-kb-list-head{background:rgba(47,111,237,.16);border-color:var(--dsw-alias-accent,#2f6fed)}.dsh-kb-dot{width:8px;height:8px;border-radius:50%;flex:none}.dsh-kb-count{margin-left:auto;color:var(--dsw-alias-label-secondary);font-weight:600;font-size:11px}.dsh-kb-drop-hint{box-sizing:border-box;flex:none;height:0;overflow:hidden;margin:0 6px;padding:0 8px;font-size:11.5px;line-height:16px;color:var(--dsw-alias-accent,#2f6fed);border:1.5px dashed transparent;border-radius:8px;opacity:0;transition:height .12s ease,padding .12s ease,opacity .12s ease}.dsh-kb-drop-hint.show{height:30px;padding:5px 8px;opacity:1;border-color:var(--dsw-alias-accent,#2f6fed);background:rgba(47,111,237,.06)}.dsh-kb-list-body{flex:1;overflow-y:auto;padding:6px;display:flex;flex-direction:column;gap:6px;min-height:0}.dsh-kb-empty{color:var(--dsw-alias-label-secondary);font-size:11px;text-align:center;padding:12px 0}.dsh-kb-group{font-size:11px;color:var(--dsw-alias-label-secondary);padding:4px 2px 0;font-weight:600;flex:none}.dsh-kb-card{background:var(--dsw-alias-bg-base);border:1px solid var(--dsw-alias-border-l2);border-radius:8px;padding:7px 9px;font-size:12.5px;cursor:grab;position:relative;display:flex;flex-direction:column;gap:5px;flex:none;transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease,opacity .12s ease}.dsh-kb-card:hover{border-color:var(--dsw-alias-accent,#2f6fed);box-shadow:0 2px 8px rgba(27,36,54,.1);transform:translateY(-1px)}.dsh-kb-card.open{border-color:var(--dsw-alias-accent,#2f6fed);background:rgba(47,111,237,.08);box-shadow:0 0 0 1px rgba(47,111,237,.22)}.dsh-kb-card.open .dsh-kb-card-title{color:var(--dsw-alias-accent,#2f6fed)}.dsh-kb-card.dragging{opacity:.35;transform:rotate(2deg) scale(.98)}.dsh-kb-card.flash{animation:dsh-kb-flash .9s ease}.dsh-kb-card-row1{display:flex;align-items:center;gap:6px;min-width:0}.dsh-kb-card-row2{display:flex;align-items:center;gap:6px;min-width:0}.dsh-kb-card-grow{flex:1}.dsh-kb-card-dot{width:7px;height:7px;border-radius:50%;flex:none}.dsh-kb-card-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dsw-alias-label-primary)}.dsh-kb-grip{opacity:0;color:var(--dsw-alias-label-secondary);font-size:12px;line-height:1;cursor:grab;flex:none;transition:opacity .12s ease;user-select:none}.dsh-kb-card:hover .dsh-kb-grip,.dsh-kb-card.dragging .dsh-kb-grip{opacity:1}.dsh-kb-chip{font-size:10.5px;color:var(--dsw-alias-accent,#2f6fed);background:rgba(47,111,237,.1);border-radius:999px;padding:1px 7px;white-space:nowrap;flex:none}.dsh-kb-chip.none{color:var(--dsw-alias-label-secondary);background:rgba(27,36,54,.06)}.dsh-kb-card-time{font-size:10.5px;color:var(--dsw-alias-label-secondary)}.dsh-kb-menu-btn{border:none;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;border-radius:5px;width:20px;height:20px;font-size:13px;line-height:1;flex:none;padding:0}.dsh-kb-menu-btn:hover{background:rgba(27,36,54,.08);color:var(--dsw-alias-label-primary)}.dsh-kb-menu{position:absolute;right:8px;top:32px;z-index:30;background:var(--dsw-alias-bg-base);border:1px solid var(--dsw-alias-border-l2);border-radius:8px;box-shadow:0 12px 32px rgba(27,36,54,.14);padding:8px;display:flex;flex-direction:column;gap:6px;width:160px}.dsh-kb-menu label{font-size:11px;color:var(--dsw-alias-label-secondary)}.dsh-kb-menu select{width:100%;font-size:12px;padding:3px;border:1px solid var(--dsw-alias-border-l2);border-radius:6px;background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary)}.dsh-kb-foot{padding:6px 10px;font-size:11px;color:var(--dsw-alias-label-secondary);border-top:1px solid var(--dsw-alias-border-l1);flex:none;text-align:center;user-select:none}@keyframes dsh-kb-flash{0%{background:rgba(47,111,237,.28);box-shadow:0 0 0 2px rgba(47,111,237,.35)}100%{background:var(--dsw-alias-bg-base);box-shadow:none}}";
 		const tagId = "@deepseek-ai/dsh-client-ui-kanban/kanban.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId) + "]") === null) {
 			const tag = document.createElement("style");
@@ -56,31 +56,9 @@ window.__ModuleLoader__.load({
 			return node.blank ? "新会话" : node.title || node.id;
 		}
 		/* ── components ─────────────────────────────────────── */
-		function KanbanCard({ id, node, module, time, zoneColor, mods, current, flash, onOpen, onSetModule, onRename, onFork, onArchive }) {
+		function KanbanCard({ id, node, module, time, zoneColor, mods, current, flash, onOpen, onSetModule }) {
 			const [menuOpen, setMenuOpen] = react.useState(false);
-			const [mode, setMode] = react.useState("actions");
-			const [renameValue, setRenameValue] = react.useState("");
-			const cardRef = react.useRef(null);
 			const title = displayTitle(node);
-			const close = () => {
-				setMenuOpen(false);
-				setMode("actions");
-			};
-			react.useEffect(() => {
-				if (!menuOpen) return;
-				const onDown = (e) => {
-					if (cardRef.current && !cardRef.current.contains(e.target)) close();
-				};
-				const onKey = (e) => {
-					if (e.key === "Escape") close();
-				};
-				document.addEventListener("pointerdown", onDown);
-				document.addEventListener("keydown", onKey);
-				return () => {
-					document.removeEventListener("pointerdown", onDown);
-					document.removeEventListener("keydown", onKey);
-				};
-			}, [menuOpen]);
 			const onDragStart = (e) => {
 				e.dataTransfer.effectAllowed = "move";
 				e.dataTransfer.setData("text/plain", id);
@@ -98,84 +76,7 @@ window.__ModuleLoader__.load({
 				e.dataTransfer.setDragImage(ghost, 16, 16);
 				window.setTimeout(() => { ghost.remove(); }, 0);
 			};
-			const menu = menuOpen ? react_jsx_runtime.jsx("div", {
-				className: "dsh-kb-menu",
-				children: mode === "rename" ? [
-					react_jsx_runtime.jsx("input", {
-						className: "dsh-kb-menu-input",
-						value: renameValue,
-						autoFocus: true,
-						onKeyDown: (e) => {
-							if (e.key === "Enter") {
-								onRename(id, renameValue.trim() || title);
-								close();
-							}
-						},
-						onChange: (e) => setRenameValue(e.target.value)
-					}, "kb-rename-input"),
-					react_jsx_runtime.jsx("div", {
-						className: "dsh-kb-menu-row",
-						children: [
-							react_jsx_runtime.jsx("button", {
-								type: "button",
-								onClick: () => {
-									onRename(id, renameValue.trim() || title);
-									close();
-								},
-								children: "确定"
-							}, "kb-rename-ok"),
-							react_jsx_runtime.jsx("button", {
-								type: "button",
-								onClick: close,
-								children: "取消"
-							}, "kb-rename-cancel")
-						]
-					}, "kb-rename-row")
-				] : [
-					react_jsx_runtime.jsx("button", {
-						type: "button",
-						className: "dsh-kb-menu-item",
-						onClick: () => {
-							setRenameValue(title);
-							setMode("rename");
-						},
-						children: "重命名"
-					}, "kb-mi-rename"),
-					react_jsx_runtime.jsx("button", {
-						type: "button",
-						className: "dsh-kb-menu-item",
-						onClick: () => {
-							onFork(id);
-							close();
-						},
-						children: "分叉"
-					}, "kb-mi-fork"),
-					react_jsx_runtime.jsx("button", {
-						type: "button",
-						className: "dsh-kb-menu-item",
-						onClick: () => {
-							onArchive(id);
-							close();
-						},
-						children: "归档"
-					}, "kb-mi-archive"),
-					react_jsx_runtime.jsx("div", { className: "dsh-kb-menu-divider" }, "kb-mi-divider"),
-					react_jsx_runtime.jsx("label", { children: "功能模块" }, "kb-menu-label"),
-					react_jsx_runtime.jsx("select", {
-						value: module || "__none__",
-						onChange: (e) => {
-							onSetModule(id, e.target.value === "__none__" ? null : e.target.value);
-							close();
-						},
-						children: [
-							react_jsx_runtime.jsx("option", { value: "__none__", children: "未分组" }, "kb-opt-none"),
-							mods.map((m) => react_jsx_runtime.jsx("option", { value: m, children: m }, m))
-						]
-					}, "kb-menu-select")
-				]
-			}, "kb-menu") : null;
 			return react_jsx_runtime.jsx("div", {
-				ref: cardRef,
 				className: "dsh-kb-card" + (current === id ? " open" : "") + (flash ? " flash" : ""),
 				draggable: true,
 				"data-session": id,
@@ -198,7 +99,7 @@ window.__ModuleLoader__.load({
 								children: title
 							}, "kb-title")
 						]
-					}, "kb-row1"),
+					}),
 					react_jsx_runtime.jsx("div", {
 						className: "dsh-kb-card-row2",
 						children: [
@@ -227,12 +128,28 @@ window.__ModuleLoader__.load({
 								children: "⋯"
 							}, "kb-menu-btn")
 						]
-					}, "kb-row2"),
-					menu
+					}),
+					menuOpen && react_jsx_runtime.jsx("div", {
+						className: "dsh-kb-menu",
+						children: [
+							react_jsx_runtime.jsx("label", { children: "功能模块" }, "kb-menu-label"),
+							react_jsx_runtime.jsx("select", {
+								value: module || "__none__",
+								onChange: (e) => {
+									onSetModule(id, e.target.value === "__none__" ? null : e.target.value);
+									setMenuOpen(false);
+								},
+								children: [
+									react_jsx_runtime.jsx("option", { value: "__none__", children: "未分组" }, "kb-opt-none"),
+									mods.map((m) => react_jsx_runtime.jsx("option", { value: m, children: m }, m))
+								]
+							}, "kb-menu-select")
+						]
+					})
 				]
 			});
 		}
-		const KanbanList = react.memo(function KanbanList({ zone, items, mods, sel, current, flash, hovered, onOpen, onSetModule, onRename, onFork, onArchive, onDropSession, onHover }) {
+		const KanbanList = react.memo(function KanbanList({ zone, items, mods, sel, current, flash, hovered, onOpen, onSetModule, onDropSession, onHover }) {
 			const now = Date.now();
 			const groups = [];
 			const ungrouped = [];
@@ -259,10 +176,7 @@ window.__ModuleLoader__.load({
 				current,
 				flash: flash === item.id,
 				onOpen,
-				onSetModule,
-				onRename,
-				onFork,
-				onArchive
+				onSetModule
 			}, item.id);
 			return react_jsx_runtime.jsx("div", {
 				className: "dsh-kb-list" + (hovered ? " drag-over" : ""),
@@ -274,11 +188,11 @@ window.__ModuleLoader__.load({
 							react_jsx_runtime.jsx("span", { children: zone.label }),
 							react_jsx_runtime.jsx("span", { className: "dsh-kb-count", children: items.length })
 						]
-					}, "kb-list-head"),
+					}),
 					react_jsx_runtime.jsx("div", {
 						className: "dsh-kb-drop-hint" + (hovered ? " show" : ""),
 						children: "松开以移动到「" + zone.label + "」"
-					}, "kb-drop-hint"),
+					}),
 					react_jsx_runtime.jsx("div", {
 						className: "dsh-kb-list-body",
 						onDragOver: (e) => {
@@ -302,11 +216,11 @@ window.__ModuleLoader__.load({
 							ungrouped.length > 0 && react_jsx_runtime.jsx("div", { className: "dsh-kb-group", children: "未分组" }),
 							ungrouped.map(card)
 						]
-					}, "kb-list-body")
+					})
 				]
 			});
 		});
-		function KanbanPanel({ useSessions, useWorkspaces, startSession, open, toggleKanban, renameSession, forkSession, archiveSession }) {
+		function KanbanPanel({ useSessions, useWorkspaces, startSession, open, toggleKanban }) {
 			const [st, setSt] = react.useState(readState);
 			const [dragActive, setDragActive] = react.useState(false);
 			const [hoverZone, setHoverZone] = react.useState(null);
@@ -450,9 +364,6 @@ window.__ModuleLoader__.load({
 								hovered: hoverZone === z.id,
 								onOpen,
 								onSetModule: setModule,
-								onRename: renameSession,
-								onFork: forkSession,
-								onArchive: archiveSession,
 								onDropSession: handleDrop,
 								onHover
 							}, z.id))
@@ -485,20 +396,6 @@ window.__ModuleLoader__.load({
 					},
 					toggleKanban: () => {
 						ctx.layout.toggleKanban();
-					},
-					renameSession: async (sessionId, title) => {
-						const session = ctx.sessions.binding(sessionId)?.session;
-						if (session === void 0) return;
-						const result = await session.rename(title);
-						if (!result.ok) console.warn("kanban rename rejected:", result.error);
-					},
-					forkSession: (sessionId) => {
-						ctx.sessions.fork({ sessionId, increaseTitle: true }).then((childId) => {
-							if (childId) ctx.sessions.open(childId);
-						}).catch((err) => console.warn("kanban fork failed:", err));
-					},
-					archiveSession: (sessionId) => {
-						ctx.workspaces.archiveSession(sessionId).catch((err) => console.warn("kanban archive failed:", err));
 					}
 				})
 			}, KanbanPanel));
